@@ -1,6 +1,9 @@
 import { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Button, Modal } from "react-bootstrap";
+import ModalViewUser from "../../components/ModalViewUser";
+import InputMask from "react-input-mask";
+import LogoImage from "../../assets/logo.png";
 
 function Home() {
   const [show, setShow] = useState(false);
@@ -18,6 +21,16 @@ function Home() {
   const [motherName, setMotherName] = useState("");
   const [status, setStatus] = useState("1");
   const [records, setRecords] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [nameError, setNameError] = useState("");
+  const [loginError, setLoginError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [phoneError, setPhoneError] = useState("");
+  const [cpfError, setCpfError] = useState("");
+  const [birthdateError, setBirthdateError] = useState("");
+  const [motherNameError, setMotherNameError] = useState("");
+  const [statusError, setStatusError] = useState("");
 
   const handleClose = () => {
     setShow(false);
@@ -32,19 +45,86 @@ function Home() {
 
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);
+    setCurrentPage(1);
   };
+
+  const [itemsPerPage] = useState(10);
 
   const filteredRecords = records.filter((record) =>
     record.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
+  const totalPages = Math.ceil(filteredRecords.length / itemsPerPage);
+
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentRecords = filteredRecords.slice(startIndex, endIndex);
+
+  const handlePaginationClick = (pageNumber) => {
+    if (pageNumber < 1 || pageNumber > totalPages) {
+      return;
+    }
+    setCurrentPage(pageNumber);
+  };
 
   const handleViewUser = (user) => {
     setViewUser(user);
     handleShowUserModal();
   };
 
+  const statusOptions = ["Ativo", "Inativo", "Bloqueado"];
+
   const handleAddRecord = (e) => {
     e.preventDefault();
+
+    if (!name) {
+      setNameError("O campo nome é obrigatório");
+      return;
+    }
+
+    if (!login) {
+      setLoginError("O campo login é obrigatório");
+      return;
+    }
+
+    if (!password) {
+      setPasswordError("O campo senha é obrigatório");
+      return;
+    }
+
+    if (!email) {
+      setEmailError("O campo e-mail é obrigatório");
+      return;
+    }
+
+    if (!phone) {
+      setPhoneError("O campo telefone é obrigatório");
+      return;
+    }
+
+    if (!cpf) {
+      setCpfError("O campo CPF é obrigatório");
+      return;
+    }
+
+    if (!birthdate) {
+      setBirthdateError("O campo data de nascimento é obrigatório");
+      return;
+    }
+
+    if (!motherName) {
+      setMotherNameError("O campo nome da mãe é obrigatório");
+      return;
+    }
+
+    if (!status) {
+      setStatusError("O campo status é obrigatório");
+      return;
+    }
+
+    if (editingUser) {
+      handleSaveUser();
+      return;
+    }
 
     const now = new Date();
     const formattedDate = now.toLocaleString();
@@ -59,7 +139,7 @@ function Home() {
       cpf,
       birthdate,
       motherName,
-      status,
+      status: statusOptions[parseInt(status) - 1],
       dataInclusao: formattedDate,
     };
 
@@ -76,6 +156,20 @@ function Home() {
     setStatus("1");
 
     handleClose();
+  };
+
+  const newUser = () => {
+    setEditingUser(null);
+    setName("");
+    setLogin("");
+    setPassword("");
+    setEmail("");
+    setPhone("");
+    setCpf("");
+    setBirthdate("");
+    setMotherName("");
+    setStatus("1");
+    handleShow();
   };
 
   const handleEditUser = (user) => {
@@ -137,6 +231,9 @@ function Home() {
     <div className="container">
       <div className="crud shadow-lg p-3 mb-5 mt-5 bg-body rounded">
         <div className="row">
+          <div className="col-sm-2">
+            <img src={LogoImage} alt="Logo" width={40} />
+          </div>
           <h2 className="mb-4">Painel de Controle - Usuários</h2>
           <div className="row">
             <div className="col-sm-3 mt-5 mb-4 text-gred">
@@ -162,7 +259,7 @@ function Home() {
               </h2>
             </div>
             <div className="col-sm-3 mt-5 mb-4 text-end">
-              <Button variant="danger" onClick={handleShow}>
+              <Button variant="danger" onClick={newUser} show={handleShow}>
                 Novo Usuário
               </Button>
             </div>
@@ -177,11 +274,11 @@ function Home() {
                   <th style={{ width: "20%" }}>#</th>
                   <th style={{ width: "25%" }}>Nome</th>
                   <th style={{ width: "25%" }}>Inclusão</th>
-                  <th style={{ width: "25%" }}>Actions</th>
+                  <th style={{ width: "25%" }}>Ações</th>
                 </tr>
               </thead>
               <tbody>
-                {filteredRecords.map((record) => (
+                {currentRecords.map((record) => (
                   <tr key={record.id}>
                     <td>{record.id}</td>
                     <td>{record.name}</td>
@@ -226,6 +323,48 @@ function Home() {
           </div>
         </div>
 
+        <nav aria-label="Page navigation">
+          <ul className="pagination justify-content-end">
+            <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
+              <a
+                className="page-link"
+                onClick={() => handlePaginationClick(currentPage - 1)}
+              >
+                Anterior
+              </a>
+            </li>
+            {Array.from({ length: totalPages }, (_, index) => index + 1).map(
+              (pageNumber) => (
+                <li
+                  className={`page-item ${
+                    pageNumber === currentPage ? "active" : ""
+                  }`}
+                  key={pageNumber}
+                >
+                  <a
+                    className="page-link"
+                    onClick={() => handlePaginationClick(pageNumber)}
+                  >
+                    {pageNumber}
+                  </a>
+                </li>
+              )
+            )}
+            <li
+              className={`page-item ${
+                currentPage === totalPages ? "disabled" : ""
+              }`}
+            >
+              <a
+                className="page-link"
+                onClick={() => handlePaginationClick(currentPage + 1)}
+              >
+                Próxima
+              </a>
+            </li>
+          </ul>
+        </nav>
+
         {/* <!--- Model Box ---> */}
         <Modal show={show} onHide={handleClose}>
           <Modal.Header closeButton>
@@ -236,101 +375,155 @@ function Home() {
           <Modal.Body>
             <form className="needs-validation" noValidate>
               <div className="form-group">
-                <label htmlFor="validationServer01" className="form-label">
-                  Nome
-                </label>
+                <label>Nome</label>
                 <input
                   type="text"
-                  className="form-control"
-                  id="validationServer01"
-                  required
+                  className={`form-control ${nameError ? "is-invalid" : ""}`}
                   placeholder="Digite o nome..."
                   value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  onChange={(e) => {
+                    setName(e.target.value);
+                    setNameError("");
+                  }}
                 />
-                <div className="invalid-feedback">Preencha este campo.</div>
+                {nameError && (
+                  <div className="invalid-feedback">{nameError}</div>
+                )}
               </div>
               <div className="form-group">
                 <label>Login</label>
                 <input
                   type="text"
-                  className="form-control"
+                  className={`form-control ${loginError ? "is-invalid" : ""}`}
                   placeholder="Insira uma senha..."
                   value={login}
-                  onChange={(e) => setLogin(e.target.value)}
+                  onChange={(e) => {
+                    setLogin(e.target.value);
+                    setLoginError("");
+                  }}
                 />
+                {loginError && (
+                  <div className="invalid-feedback">{loginError}</div>
+                )}
               </div>
               <div className="form-group">
                 <label>Senha</label>
                 <input
                   type="password"
-                  className="form-control"
+                  className={`form-control ${
+                    passwordError ? "is-invalid" : ""
+                  }`}
                   placeholder="Insira uma senha..."
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    setPasswordError("");
+                  }}
                 />
+                {passwordError && (
+                  <div className="invalid-feedback">{passwordError}</div>
+                )}
               </div>
               <div className="form-group">
                 <label>E-mail</label>
                 <input
                   type="email"
-                  className="form-control"
+                  className={`form-control ${emailError ? "is-invalid" : ""}`}
                   placeholder="Digite o e-mail..."
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    setEmailError("");
+                  }}
                 />
+                {emailError && (
+                  <div className="invalid-feedback">{emailError}</div>
+                )}
               </div>
               <div className="form-group">
                 <label>Telefone</label>
-                <input
+                <InputMask
+                  mask="(99) 99999-9999"
                   type="phone"
-                  className="form-control"
+                  className={`form-control ${phoneError ? "is-invalid" : ""}`}
                   placeholder="Insira um telefone..."
                   value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
+                  onChange={(e) => {
+                    setPhone(e.target.value);
+                    setPhoneError("");
+                  }}
                 />
+                {phoneError && (
+                  <div className="invalid-feedback">{phoneError}</div>
+                )}
               </div>
               <div className="form-group">
                 <label>CPF</label>
-                <input
+                <InputMask
+                  mask="999.999.999-99"
                   type="text"
-                  className="form-control"
+                  className={`form-control ${cpfError ? "is-invalid" : ""}`}
                   placeholder="Insira um CPF..."
                   value={cpf}
-                  onChange={(e) => setCpf(e.target.value)}
+                  onChange={(e) => {
+                    setCpf(e.target.value);
+                    setCpfError("");
+                  }}
                 />
+                {cpfError && <div className="invalid-feedback">{cpfError}</div>}
               </div>
               <div className="form-group">
                 <label>Data de Nascimento</label>
-                <input
+                <InputMask
+                  mask="99/99/9999"
                   type="text"
-                  className="form-control"
+                  className={`form-control ${
+                    birthdateError ? "is-invalid" : ""
+                  }`}
                   placeholder="Insira uma data de nascimento..."
                   value={birthdate}
-                  onChange={(e) => setBirthdate(e.target.value)}
+                  onChange={(e) => {
+                    setBirthdate(e.target.value);
+                    setBirthdateError("");
+                  }}
                 />
+                {birthdateError && (
+                  <div className="invalid-feedback">{birthdateError}</div>
+                )}
               </div>
               <div className="form-group">
                 <label>Nome da Mãe</label>
                 <input
                   type="text"
-                  className="form-control"
+                  className={`form-control ${
+                    motherNameError ? "is-invalid" : ""
+                  }`}
                   placeholder="Insira o nome da mãe..."
                   value={motherName}
-                  onChange={(e) => setMotherName(e.target.value)}
+                  onChange={(e) => {
+                    setMotherName(e.target.value);
+                    setMotherNameError("");
+                  }}
                 />
                 <div className="form-group">
                   <label htmlFor="status">Status</label>
                   <div className="input-group">
                     <select
-                      className="form-select"
-                      aria-label="Default select example"
+                      className={`form-select ${
+                        statusError ? "is-invalid" : ""
+                      }`}
+                      aria-label="Default select"
+                      value={status}
+                      onChange={(e) => {
+                        setStatus(e.target.value);
+                        setStatusError("");
+                      }}
                     >
-                      <option selected value="1">
-                        Ativo
-                      </option>
-                      <option value="2">Inativo</option>
-                      <option value="3">Bloqueado</option>
+                      {statusOptions.map((option, index) => (
+                        <option key={index} value={index + 1}>
+                          {option}
+                        </option>
+                      ))}
                     </select>
                     <div className="input-group-append"></div>
                   </div>
@@ -355,72 +548,11 @@ function Home() {
         </Modal>
 
         {/* Modal para exibir as informações do usuário */}
-        <Modal show={showUserModal} onHide={handleCloseUserModal}>
-          <Modal.Header closeButton>
-            <Modal.Title>Detalhes do Usuário</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            {viewUser && (
-              <table className="table">
-                <tbody>
-                  <tr>
-                    <td>
-                      <strong>Nome:</strong>
-                    </td>
-                    <td>{viewUser.name}</td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <strong>Login:</strong>
-                    </td>
-                    <td>{viewUser.login}</td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <strong>E-mail:</strong>
-                    </td>
-                    <td>{viewUser.email}</td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <strong>Telefone:</strong>
-                    </td>
-                    <td>{viewUser.phone}</td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <strong>CPF:</strong>
-                    </td>
-                    <td>{viewUser.cpf}</td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <strong>Data de Nascimento:</strong>
-                    </td>
-                    <td>{viewUser.birthdate}</td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <strong>Nome da Mãe:</strong>
-                    </td>
-                    <td>{viewUser.motherName}</td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <strong>Status:</strong>
-                    </td>
-                    <td>{viewUser.status}</td>
-                  </tr>
-                </tbody>
-              </table>
-            )}
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={handleCloseUserModal}>
-              Fechar
-            </Button>
-          </Modal.Footer>
-        </Modal>
+        <ModalViewUser
+          show={showUserModal}
+          handleClose={handleCloseUserModal}
+          viewUser={viewUser}
+        />
       </div>
     </div>
   );
