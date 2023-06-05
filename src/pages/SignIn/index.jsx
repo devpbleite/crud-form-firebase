@@ -1,25 +1,54 @@
-import { useContext, useState } from "react";
+import { useState, useEffect } from "react";
 import React from "react";
 import LogoImage from "../../assets/logo.png";
 import { Link } from "react-router-dom";
 import { useSignInWithEmailAndPassword } from "react-firebase-hooks/auth";
 import { auth } from "../../services/firebaseConfig";
+import Swal from "sweetalert2";
 
 function SignIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
+  const [isFormValid, setIsFormValid] = useState(false);
 
   const [signInWithEmailAndPassword, user, loading, error] =
     useSignInWithEmailAndPassword(auth);
 
-  function handleSignIn(e) {
+  useEffect(() => {
+    setIsFormValid(email && password);
+  }, [email, password]);
+
+  async function handleSignIn(e) {
     e.preventDefault();
-    if (email && password) {
-      signInWithEmailAndPassword(email, password);
+    if (isFormValid) {
+      try {
+        await signInWithEmailAndPassword(email, password);
+
+        window.location.href = "/home";
+      } catch (error) {
+        
+        Swal.fire({
+          icon: "error",
+          title: "Erro de autenticação",
+          text: "Usuário não cadastrado. Por favor, verifique suas credenciais.",
+        });
+      }
     } else {
-      setErrorMessage("Por favor, preencha todos os campos.");
+      
+      Swal.fire({
+        icon: "error",
+        title: "Erro de autenticação",
+        text: "Por favor, preencha todos os campos.",
+      });
     }
+  }
+
+  function handleEmailChange(e) {
+    setEmail(e.target.value);
+  }
+
+  function handlePasswordChange(e) {
+    setPassword(e.target.value);
   }
 
   if (loading) {
@@ -34,18 +63,14 @@ function SignIn() {
             <img src={LogoImage} alt="" width={55} />
           </div>
           <h3 className="pb-3">Faça seu login</h3>
-          {errorMessage && (
-            <p className="alert alert-danger" role="alert">
-              {errorMessage}
-            </p>
-          )}
+
           <div className="mb-2">
             <label htmlFor="email">E-mail</label>
             <input
               type="email"
               className="form-control"
               placeholder="Digite seu email..."
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={handleEmailChange}
             />
           </div>
           <div className="mb-2">
@@ -54,7 +79,7 @@ function SignIn() {
               type="password"
               className="form-control"
               placeholder="************"
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={handlePasswordChange}
             />
           </div>
           <div className="mb-2">
@@ -68,7 +93,11 @@ function SignIn() {
             </label>
           </div>
           <div className="d-grid">
-            <button className="btn btn-danger" onClick={handleSignIn}>
+            <button
+              className="btn btn-danger"
+              disabled={!isFormValid}
+              onClick={handleSignIn}
+            >
               <Link
                 to="/home"
                 style={{ textDecoration: "none", color: "white" }}
@@ -80,10 +109,21 @@ function SignIn() {
           <p className="text-end pt-2">
             Esqueceu a{" "}
             <strong>
-              <Link to="/forgotpass">senha?</Link>
+              <Link
+                style={{ textDecoration: "none", color: "black" }}
+                to="/forgotpass"
+              >
+                senha?
+              </Link>
             </strong>
             <strong className="p-1">
-              | <Link to="/signup">Registre-se</Link>
+              |{" "}
+              <Link
+                style={{ textDecoration: "none", color: "black" }}
+                to="/signup"
+              >
+                Registre-se
+              </Link>
             </strong>
           </p>
         </form>

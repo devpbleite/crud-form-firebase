@@ -2,63 +2,77 @@ import React from "react";
 import LogoImage from "../../assets/logo.png";
 import { Link } from "react-router-dom";
 import { useState } from "react";
-import { useCreateUserWithEmailAndPassword } from "react-firebase-hooks/auth";
-import { auth } from "../../services/firebaseConfig";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth, db, createUserDocument } from "../../services/firebaseConfig";
+import { doc, setDoc, getDoc } from "firebase/firestore";
+import Swal from "sweetalert2";
 
 function SignUp() {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
-  const [createUserWithEmailAndPassword, user, loading, error] =
-    useCreateUserWithEmailAndPassword(auth);
-
-  function handleSignUp(e) {
+  async function handleSignUp(e) {
     e.preventDefault();
 
-    if (email && password) {
-      createUserWithEmailAndPassword(email, password)
-        .then(() => {
-          setSuccessMessage("Usuário cadastrado com sucesso!");
-          setErrorMessage("");
-        })
-        .catch((error) => {
-          setErrorMessage(
-            "Ocorreu um erro ao criar o usuário. Por favor, tente novamente."
-          );
-          setSuccessMessage("");
-        });
+    if (name && email && password) {
+      try {
+        const userCredential = await createUserWithEmailAndPassword(
+          auth,
+          email,
+          password
+        );
+
+        const user = userCredential.user;
+
+        await createUserDocument(user, { name });
+
+        setErrorMessage("");
+      } catch (error) {
+        setErrorMessage(
+          "Ocorreu um erro ao criar o usuário. Por favor, tente novamente."
+        );
+      }
+
+      setSuccessMessage("Usuário cadastrado com sucesso!");
+
+      Swal.fire({
+        icon: "success",
+        title: "Sucesso!",
+        text: "Usuário cadastrado com sucesso!",
+      });
     } else {
       setErrorMessage("Por favor, preencha todos os campos.");
       setSuccessMessage("");
     }
   }
-  
+
   return (
     <div className="signin template d-flex justify-content-center align-items-center vh-100 bg-danger">
-      <div className="fcol-sm-8 col-md-6 col-lg-4 p-5 rounded bg-white">
+      <div className="col-sm-8 col-md-6 col-lg-4 p-5 rounded bg-white">
         <form>
           <div className="d-flex justify-content-center mb-4">
             <img src={LogoImage} alt="" width={55} />
           </div>
           <h3 className="pb-3">Registre-se</h3>
           {successMessage && (
-            <p className="alert alert-success" role="alert">
+            <div className="alert alert-success" role="alert">
               {successMessage}
-            </p>
+            </div>
           )}
           {errorMessage && (
-            <p className="alert alert-danger" role="alert">
+            <div className="alert alert-danger" role="alert">
               {errorMessage}
-            </p>
+            </div>
           )}
           <div className="mb-2">
             <label htmlFor="email">Nome</label>
             <input
               type="text"
               className="form-control"
-              placeholder="Digite seu nome..."              
+              placeholder="Digite seu nome..."
               onChange={(e) => setName(e.target.value)}
             />
           </div>
@@ -99,7 +113,7 @@ function SignUp() {
           </div>
           <p className="text-end pt-2">
             Possui uma conta?{" "}
-            <Link to="/">
+            <Link style={{ textDecoration: "none", color: "black" }} to="/">
               <strong>Faça seu login</strong>
             </Link>
           </p>

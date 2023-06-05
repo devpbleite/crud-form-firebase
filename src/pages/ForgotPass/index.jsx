@@ -20,7 +20,7 @@ function ForgotPass() {
             />
           </div>
           <div className="mb-2">
-            <label htmlFor="email">Cofirme seu e-mail</label>
+            <label htmlFor="email">Confirme seu e-mail</label>
             <input
               type="email"
               className="form-control"

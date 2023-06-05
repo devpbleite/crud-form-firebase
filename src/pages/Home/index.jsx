@@ -3,6 +3,7 @@ import {
   getFirestore,
   collection,
   getDoc,
+  updateDoc,
   addDoc,
   deleteDoc,
   doc,
@@ -14,6 +15,7 @@ import ModalViewUser from "../../components/ModalViewUser";
 import InputMask from "react-input-mask";
 import LogoImage from "../../assets/logo.png";
 import { initializeApp } from "firebase/app";
+import Swal from "sweetalert2";
 
 const firebaseApp = initializeApp({
   apiKey: "AIzaSyD9Zuzlc5R5tj1a7sIBSM0WD5F2ztTygYw",
@@ -38,13 +40,18 @@ function Home() {
   const [users, setUsers] = useState([]);
   const [showUserModal, setShowUserModal] = useState(false);
   const [viewUser, setViewUser] = useState(null);
+  const [editUser, setEditUser] = useState(null);
   const [records, setRecords] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [validationErrors, setValidationErrors] = useState({});
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  const handleClose = () => setShow(false);
+  const handleClose = () => {
+    setEditUser(null);
+    resetForm();
+    setShow(false);
+  };
   const handleShow = () => setShow(true);
 
   const handleCloseUserModal = () => setShowUserModal(false);
@@ -60,6 +67,26 @@ function Home() {
     setBirthdate("");
     setMotherName("");
     setStatus("1");
+  };
+
+  const statusOptions = {
+    1: "Ativo",
+    2: "Inativo",
+    3: "Pendente",
+  };
+
+  const handleEditIconClick = (user) => {
+    setEditUser(user);
+    setName(user.name);
+    setLogin(user.login);
+    setPassword(user.password);
+    setEmail(user.email);
+    setPhone(user.phone);
+    setCpf(user.cpf);
+    setBirthdate(user.birthdate);
+    setMotherName(user.motherName);
+    setStatus(user.status);
+    handleShow();
   };
 
   const handleSearch = (event) => {
@@ -124,6 +151,7 @@ function Home() {
     }
 
     setValidationErrors({});
+    setEditUser(null);
 
     const db = getFirestore(firebaseApp);
     const user = await addDoc(collection(db, "users"), {
@@ -140,33 +168,39 @@ function Home() {
 
     resetForm();
     handleClose();
+
+    Swal.fire({
+      icon: "success",
+      title: "Sucesso!",
+      text: "Usuário cadastrado com sucesso!",
+    });
   };
 
   const handleUpdateUser = async () => {
     const errors = {};
 
-    if (!user.name) {
+    if (!name) {
       errors.name = true;
     }
-    if (!user.login) {
+    if (!login) {
       errors.login = true;
     }
-    if (!user.password) {
+    if (!password) {
       errors.password = true;
     }
-    if (!user.email) {
+    if (!email) {
       errors.email = true;
     }
-    if (!user.phone) {
+    if (!phone) {
       errors.phone = true;
     }
-    if (!user.cpf) {
+    if (!cpf) {
       errors.cpf = true;
     }
-    if (!user.birthdate) {
+    if (!birthdate) {
       errors.birthdate = true;
     }
-    if (!user.motherName) {
+    if (!motherName) {
       errors.motherName = true;
     }
 
@@ -178,27 +212,51 @@ function Home() {
     setValidationErrors({});
 
     const db = getFirestore(firebaseApp);
-    const userDocRef = doc(db, "users", user.id);
+    const userDocRef = doc(db, "users", editUser.id);
     await updateDoc(userDocRef, {
-      name: user.name,
-      login: user.login,
-      password: user.password,
-      email: user.email,
-      phone: user.phone,
-      cpf: user.cpf,
-      birthdate: user.birthdate,
-      motherName: user.motherName,
-      status: user.status,
+      name,
+      login,
+      password,
+      email,
+      phone,
+      cpf,
+      birthdate,
+      motherName,
+      status,
     });
 
     resetForm();
     handleClose();
+
+    Swal.fire({
+      icon: "success",
+      title: "Sucesso!",
+      text: "Usuário atualizado com sucesso!",
+    });
   };
 
   const handleDeleteUser = async (id) => {
     const db = getFirestore(firebaseApp);
     const userDoc = doc(db, "users", id);
-    await deleteDoc(userDoc);
+
+    await Swal.fire({
+      title: "Tem certeza disso?",
+      text: "Você não poderá reverter a exclusão!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Sim, exclua!",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        await deleteDoc(userDoc);
+        Swal.fire(
+          "Deletado!",
+          "O usuário foi excluído com sucesso!",
+          "success"
+        );
+      }
+    });
   };
 
   useEffect(() => {
@@ -221,14 +279,22 @@ function Home() {
   );
 
   return (
-    <div className="container ">
-      <div className="crud shadow-lg p-3 mb-5 mt-5 bg-body rounded">
-        <div className="row">
+    <div className="p-3 m-5">
+      <div
+        className="crud shadow-lg p-3 bg-body mx-auto rounded"
+        style={{
+          maxWidth: "1100px",
+          maxHeight: "800px",
+          width: "100%",
+          height: "100vh",
+        }}
+      >
+        <div className="row" style={{ "--bs-gutter-x": 0 }}>
           <div className="col-12 col-sm-6 col-lg-4">
             <img src={LogoImage} alt="Logo" width={40} />
           </div>
           <div className="col-12 col-sm-6 col-lg-5 text-center">
-            <h2 className="mb-4">Painel de Controle - Usuários</h2>
+            <h3 className="mb-4">Painel de Controle - Usuários</h3>
           </div>
 
           <div className="col-12 col-md-4 mt-3">
@@ -246,7 +312,7 @@ function Home() {
             </div>
           </div>
 
-          <div className="col-12 col-md-6 mt-3 text-end pb-4">
+          <div className="col-12 col-md-8 mt-3 text-end pb-4 text-end">
             <Button variant="danger" onClick={handleShow}>
               Novo Usuário
             </Button>
@@ -273,7 +339,7 @@ function Home() {
                     <td>{user.name}</td>
                     <td>{user.cpf}</td>
                     <td>{user.login}</td>
-                    <td>{user.status}</td>
+                    <td>{statusOptions[user.status]}</td>
                     <td>{user.birthdate}</td>
 
                     <td className="text-center">
@@ -293,7 +359,7 @@ function Home() {
                         className="edit"
                         title="Edit"
                         data-toggle="tooltip"
-                        onClick={() => handleEditUser(user)}
+                        onClick={() => handleEditIconClick(user)}
                       >
                         <i className="material-icons">&#xE254;</i>
                       </a>
@@ -315,9 +381,8 @@ function Home() {
             </table>
           </div>
         </div>
-
-        <nav aria-label="Page navigation">
-          <ul className="pagination justify-content-end">
+        <nav className="mt-5" aria-label="Page navigation">
+          <ul className="pagination pagination-sm justify-content-end">
             <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
               <a
                 className="page-link"
@@ -357,188 +422,203 @@ function Home() {
             </li>
           </ul>
         </nav>
+      </div>
 
-        {/* <!--- Model Box ---> */}
-        <div className="model_box">
-          <Modal
-            show={show}
-            onHide={handleClose}
-            backdrop="static"
-            keyboard={false}
-          >
-            <Modal.Header closeButton>
-              <Modal.Title>Novo Usuário</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-              <form>
-                <div className="form-group">
-                  Nome
-                  <input
-                    type="text"
+      {/* <!--- Model Box ---> */}
+      <div className="model_box">
+        <Modal
+          show={show}
+          onHide={handleClose}
+          backdrop="static"
+          keyboard={false}
+        >
+          <Modal.Header closeButton>
+            <Modal.Title>
+              {editUser ? "Editar Usuário" : "Novo Usuário"}
+            </Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <form>
+              <div className="form-group">
+                Nome
+                <input
+                  type="text"
+                  className={`form-control ${
+                    isSubmitted && validationErrors.name ? "is-invalid" : ""
+                  }`}
+                  aria-describedby="emailHelp"
+                  placeholder="Nome Completo"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                />
+                {validationErrors.name && (
+                  <div className="invalid-feedback">Campo obrigatório.</div>
+                )}
+              </div>
+              <div className="form-group mt-3">
+                Login
+                <input
+                  type="text"
+                  className={`form-control ${
+                    isSubmitted && validationErrors.name ? "is-invalid" : ""
+                  }`}
+                  placeholder="Login"
+                  value={login}
+                  onChange={(e) => setLogin(e.target.value)}
+                />
+                {validationErrors.login && (
+                  <div className="invalid-feedback">Campo obrigatório.</div>
+                )}
+              </div>
+              <div className="form-group mt-3">
+                Senha
+                <input
+                  type="password"
+                  className={`form-control ${
+                    isSubmitted && validationErrors.name ? "is-invalid" : ""
+                  }`}
+                  id="exampleInputEmail1"
+                  aria-describedby="emailHelp"
+                  placeholder="Senha"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+                {validationErrors.password && (
+                  <div className="invalid-feedback">Campo obrigatório.</div>
+                )}
+              </div>
+              <div className="form-group mt-3">
+                E-mail
+                <input
+                  type="email"
+                  className={`form-control ${
+                    isSubmitted && validationErrors.name ? "is-invalid" : ""
+                  }`}
+                  id="exampleInputPassword1"
+                  placeholder="E-mail"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+                {validationErrors.email && (
+                  <div className="invalid-feedback">Campo obrigatório.</div>
+                )}
+              </div>
+              <div className="form-group mt-3">
+                Telefone
+                <InputMask
+                  type="text"
+                  mask={"(99) 99999-9999"}
+                  className={`form-control ${
+                    isSubmitted && validationErrors.name ? "is-invalid" : ""
+                  }`}
+                  id="exampleInputPassword1"
+                  placeholder="Telefone"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                />
+                {validationErrors.phone && (
+                  <div className="invalid-feedback">Campo obrigatório.</div>
+                )}
+              </div>
+              <div className="form-group mt-3">
+                CPF
+                <InputMask
+                  type="text"
+                  mask={"999.999.999-99"}
+                  className={`form-control ${
+                    isSubmitted && validationErrors.name ? "is-invalid" : ""
+                  }`}
+                  id="exampleInputPassword1"
+                  placeholder="CPF"
+                  value={cpf}
+                  onChange={(e) => setCpf(e.target.value)}
+                />
+                {validationErrors.cpf && (
+                  <div className="invalid-feedback">Campo obrigatório.</div>
+                )}
+              </div>
+              <div className="form-group mt-3">
+                Data de Nascimento
+                <InputMask
+                  className={`form-control ${
+                    isSubmitted && validationErrors.name ? "is-invalid" : ""
+                  }`}
+                  mask="99/99/9999"
+                  placeholder="Data de Nascimento"
+                  value={birthdate}
+                  onChange={(e) => setBirthdate(e.target.value)}
+                />
+                {validationErrors.birthdate && (
+                  <div className="invalid-feedback">Campo obrigatório.</div>
+                )}
+              </div>
+              <div className="form-group mt-3">
+                Nome da Mãe
+                <input
+                  type="text"
+                  className={`form-control ${
+                    isSubmitted && validationErrors.name ? "is-invalid" : ""
+                  }`}
+                  id="exampleInputPassword1"
+                  placeholder="Nome da Mãe"
+                  value={motherName}
+                  onChange={(e) => setMotherName(e.target.value)}
+                />
+                {validationErrors.motherName && (
+                  <div className="invalid-feedback">Campo obrigatório.</div>
+                )}
+              </div>
+              <div className="form-group mt-3">
+                <label htmlFor="status">Status</label>
+                <div className="input-group">
+                  <select
                     className={`form-control ${
                       isSubmitted && validationErrors.name ? "is-invalid" : ""
                     }`}
-                    aria-describedby="emailHelp"
-                    placeholder="Nome Completo"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                  />
-                  {validationErrors.name && (
-                    <div className="invalid-feedback">Campo obrigatório.</div>
-                  )}
+                    aria-label="Default select example"
+                    value={status}
+                    onChange={(e) => setStatus(e.target.value)}
+                  >
+                    <option value="Ativo">Ativo</option>
+                    <option value="Inativo">Inativo</option>
+                    <option value="Bloqueado">Bloqueado</option>
+                  </select>
                 </div>
-                <div className="form-group mt-3">
-                  Login
-                  <input
-                    type="text"
-                    className={`form-control ${
-                      isSubmitted && validationErrors.name ? "is-invalid" : ""
-                    }`}
-                    placeholder="Login"
-                    value={login}
-                    onChange={(e) => setLogin(e.target.value)}
-                  />
-                  {validationErrors.login && (
-                    <div className="invalid-feedback">Campo obrigatório.</div>
-                  )}
-                </div>
-                <div className="form-group mt-3">
-                  Senha
-                  <input
-                    type="password"
-                    className={`form-control ${
-                      isSubmitted && validationErrors.name ? "is-invalid" : ""
-                    }`}
-                    id="exampleInputEmail1"
-                    aria-describedby="emailHelp"
-                    placeholder="Senha"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                  />
-                  {validationErrors.password && (
-                    <div className="invalid-feedback">Campo obrigatório.</div>
-                  )}
-                </div>
-                <div className="form-group mt-3">
-                  E-mail
-                  <input
-                    type="email"
-                    className={`form-control ${
-                      isSubmitted && validationErrors.name ? "is-invalid" : ""
-                    }`}
-                    id="exampleInputPassword1"
-                    placeholder="E-mail"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                  />
-                  {validationErrors.email && (
-                    <div className="invalid-feedback">Campo obrigatório.</div>
-                  )}
-                </div>
-                <div className="form-group mt-3">
-                  Telefone
-                  <InputMask
-                    type="text"
-                    mask={"(99) 99999-9999"}
-                    className={`form-control ${
-                      isSubmitted && validationErrors.name ? "is-invalid" : ""
-                    }`}
-                    id="exampleInputPassword1"
-                    placeholder="Telefone"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                  />
-                  {validationErrors.phone && (
-                    <div className="invalid-feedback">Campo obrigatório.</div>
-                  )}
-                </div>
-                <div className="form-group mt-3">
-                  CPF
-                  <InputMask
-                    type="text"
-                    mask={"999.999.999-99"}
-                    className={`form-control ${
-                      isSubmitted && validationErrors.name ? "is-invalid" : ""
-                    }`}
-                    id="exampleInputPassword1"
-                    placeholder="CPF"
-                    value={cpf}
-                    onChange={(e) => setCpf(e.target.value)}
-                  />
-                  {validationErrors.cpf && (
-                    <div className="invalid-feedback">Campo obrigatório.</div>
-                  )}
-                </div>
-                <div className="form-group mt-3">
-                  Data de Nascimento
-                  <InputMask
-                    className={`form-control ${
-                      isSubmitted && validationErrors.name ? "is-invalid" : ""
-                    }`}
-                    mask="99/99/9999"
-                    placeholder="Data de Nascimento"
-                    value={birthdate}
-                    onChange={(e) => setBirthdate(e.target.value)}
-                  />
-                  {validationErrors.birthdate && (
-                    <div className="invalid-feedback">Campo obrigatório.</div>
-                  )}
-                </div>
-                <div className="form-group mt-3">
-                  Nome da Mãe
-                  <input
-                    type="text"
-                    className={`form-control ${
-                      isSubmitted && validationErrors.name ? "is-invalid" : ""
-                    }`}
-                    id="exampleInputPassword1"
-                    placeholder="Nome da Mãe"
-                    value={motherName}
-                    onChange={(e) => setMotherName(e.target.value)}
-                  />
-                  {validationErrors.motherName && (
-                    <div className="invalid-feedback">Campo obrigatório.</div>
-                  )}
-                </div>
-                <div className="form-group mt-3">
-                  <label htmlFor="status">Status</label>
-                  <div className="input-group">
-                    <select
-                      className={`form-control ${
-                        isSubmitted && validationErrors.name ? "is-invalid" : ""
-                      }`}
-                      aria-label="Default select example"
-                      value={status}
-                      onChange={(e) => setStatus(e.target.value)}
-                    >
-                      <option value="Ativo">Ativo</option>
-                      <option value="Inativo">Inativo</option>
-                      <option value="Bloqueado">Bloqueado</option>
-                    </select>
-                  </div>
-                </div>
-
-                <button
-                  type="submit"
-                  className="btn btn-danger mt-4"
+              </div>
+              {editUser === null ? (
+                <Button
+                  className="mt-3"
+                  variant="danger"
                   onClick={() => {
                     setIsSubmitted(true);
                     handleCreateUser();
                   }}
                 >
                   Cadastrar
-                </button>
-              </form>
-            </Modal.Body>
-          </Modal>
+                </Button>
+              ) : (
+                <Button
+                  type="submit"
+                  className="mt-3"
+                  variant="danger"
+                  onClick={() => {
+                    setIsSubmitted(true);
+                    handleUpdateUser();
+                    setEditUser(null);
+                  }}
+                >
+                  Atualizar
+                </Button>
+              )}
+            </form>
+          </Modal.Body>
+        </Modal>
 
-          {/* Model Box Finsihs */}
-          <ModalViewUser
-            show={showUserModal}
-            handleClose={handleCloseUserModal}
-            user={viewUser}
-          />
-        </div>
+        <ModalViewUser
+          show={showUserModal}
+          handleClose={handleCloseUserModal}
+          user={viewUser}
+        />
       </div>
     </div>
   );
