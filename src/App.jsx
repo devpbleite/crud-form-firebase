@@ -1,13 +1,8 @@
+//import AuthProvider from "./context/auth";
+import RoutesApp from "./routes";
 
-import Home from './pages/Home'
+const App = () => {
+  return <RoutesApp />;
+};
 
-function App() {
-
-  return (
-    <div className='App'>
-       <Home/> 
-    </div>
-  )
-}
-
-export default App
+export default App;

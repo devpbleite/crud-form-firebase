@@ -1,63 +1,63 @@
 import React from "react";
 import { Modal, Button } from "react-bootstrap";
 
-const ModalViewUser = ({ show, handleClose, viewUser }) => {
+const ModalViewUser = ({ show, handleClose, user }) => {
   return (
     <Modal show={show} onHide={handleClose}>
       <Modal.Header closeButton>
         <Modal.Title>Detalhes do Usuário</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        {viewUser && (
+        {user && (
           <table className="table">
             <tbody>
               <tr>
                 <td>
                   <strong>Nome:</strong>
                 </td>
-                <td>{viewUser.name}</td>
+                <td>{user.name}</td>
               </tr>
               <tr>
                 <td>
                   <strong>Login:</strong>
                 </td>
-                <td>{viewUser.login}</td>
+                <td>{user.login}</td>
               </tr>
               <tr>
                 <td>
                   <strong>E-mail:</strong>
                 </td>
-                <td>{viewUser.email}</td>
+                <td>{user.email}</td>
               </tr>
               <tr>
                 <td>
                   <strong>Telefone:</strong>
                 </td>
-                <td>{viewUser.phone}</td>
+                <td>{user.phone}</td>
               </tr>
               <tr>
                 <td>
                   <strong>CPF:</strong>
                 </td>
-                <td>{viewUser.cpf}</td>
+                <td>{user.cpf}</td>
               </tr>
               <tr>
                 <td>
                   <strong>Data de Nascimento:</strong>
                 </td>
-                <td>{viewUser.birthdate}</td>
+                <td>{user.birthdate}</td>
               </tr>
               <tr>
                 <td>
                   <strong>Nome da Mãe:</strong>
                 </td>
-                <td>{viewUser.motherName}</td>
+                <td>{user.motherName}</td>
               </tr>
               <tr>
                 <td>
                   <strong>Status:</strong>
                 </td>
-                <td>{viewUser.status}</td>
+                <td>{user.status}</td>
               </tr>
             </tbody>
           </table>
