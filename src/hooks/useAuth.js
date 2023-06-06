@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const useAuth = () => {
   const [isAuth, setIsAuth] = useState(false);
   const [user, setUser] = useState(null);
-  const history = useHistory();
   const auth = getAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -16,7 +16,7 @@ const useAuth = () => {
       } else {
         setIsAuth(false);
         setUser(null);
-        history.push("/signin");
+        navigate("/signin");
       }
     });
 

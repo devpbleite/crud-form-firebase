@@ -1,50 +1,78 @@
-import React from "react";
 import LogoImage from "../../assets/logo.png";
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth, db, createUserDocument } from "../../services/firebaseConfig";
-import { doc, setDoc, getDoc } from "firebase/firestore";
 import Swal from "sweetalert2";
 
 function SignUp() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [isFormValid, setIsFormValid] = useState(false);
+
+  useEffect(() => {
+    setIsFormValid(name && email && password && confirmPassword);
+  }, [name, email, password, confirmPassword]);
+
+  function resetForm() {
+    setName("");
+    setEmail("");
+    setPassword("");
+    setConfirmPassword("");
+  }
 
   async function handleSignUp(e) {
     e.preventDefault();
 
-    if (name && email && password) {
+    if (isFormValid) {
+      if (password !== confirmPassword) {
+        setErrorMessage("");
+        Swal.fire({
+          icon: "error",
+          title: "Erro",
+          text: "As senhas não coincidem. Por favor, corrija-as.",
+        });
+        return;
+      }
+
       try {
         const userCredential = await createUserWithEmailAndPassword(
           auth,
           email,
-          password
+          password,
+          confirmPassword
         );
 
         const user = userCredential.user;
 
         await createUserDocument(user, { name });
-
-        setErrorMessage("");
       } catch (error) {
         setErrorMessage(
           "Ocorreu um erro ao criar o usuário. Por favor, tente novamente."
         );
       }
-
+      resetForm();
       setSuccessMessage("Usuário cadastrado com sucesso!");
 
       Swal.fire({
         icon: "success",
         title: "Sucesso!",
-        text: "Usuário cadastrado com sucesso!",
+        text: "Usuário cadastrado com sucesso! Volte para a página de login.",
       });
+      setTimeout(() => {
+        window.location.href = "/";
+      }, 2000);
     } else {
-      setErrorMessage("Por favor, preencha todos os campos.");
+      Swal.fire({
+        icon: "warning",
+        title: "Oops...",
+        text: "Por favor, preencha todos os campos.",
+      });
+      setErrorMessage("");
       setSuccessMessage("");
     }
   }
@@ -57,22 +85,14 @@ function SignUp() {
             <img src={LogoImage} alt="" width={55} />
           </div>
           <h3 className="pb-3">Registre-se</h3>
-          {successMessage && (
-            <div className="alert alert-success" role="alert">
-              {successMessage}
-            </div>
-          )}
-          {errorMessage && (
-            <div className="alert alert-danger" role="alert">
-              {errorMessage}
-            </div>
-          )}
+
           <div className="mb-2">
             <label htmlFor="email">Nome</label>
             <input
               type="text"
               className="form-control"
               placeholder="Digite seu nome..."
+              value={name}
               onChange={(e) => setName(e.target.value)}
             />
           </div>
@@ -82,6 +102,7 @@ function SignUp() {
               type="email"
               className="form-control"
               placeholder="Digite seu email..."
+              value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
           </div>
@@ -91,6 +112,7 @@ function SignUp() {
               type="password"
               className="form-control"
               placeholder="Digite sua senha..."
+              value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
           </div>
@@ -100,15 +122,14 @@ function SignUp() {
               type="password"
               className="form-control"
               placeholder="Confirme sua senha..."
-              onChange={(e) => setPassword(e.target.value)}
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
             />
           </div>
 
           <div className="d-grid pt-2">
             <button className="btn btn-danger" onClick={handleSignUp}>
-              <Link to="/" style={{ textDecoration: "none", color: "white" }}>
-                Cadastrar
-              </Link>
+              Cadastrar
             </button>
           </div>
           <p className="text-end pt-2">
