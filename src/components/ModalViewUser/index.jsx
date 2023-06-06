@@ -25,6 +25,12 @@ const ModalViewUser = ({ show, handleClose, user }) => {
               </tr>
               <tr>
                 <td>
+                  <strong>Senha:</strong>
+                </td>
+                <td>{user.password}</td>
+              </tr>
+              <tr>
+                <td>
                   <strong>E-mail:</strong>
                 </td>
                 <td>{user.email}</td>
