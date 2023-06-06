@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import { getFirestore, doc, setDoc } from "firebase/firestore";
 import "firebase/firestore";
 import "firebase/auth";
@@ -13,9 +13,9 @@ const firebaseConfig = {
   appId: "1:339738484630:web:7d8a6c6d13ca0183acc7b7",
 };
 
-const app = initializeApp(firebaseConfig);
-export const auth = getAuth(app);
-export const db = getFirestore(app);
+export const firebaseApp = initializeApp(firebaseConfig);
+export const auth = getAuth(firebaseApp);
+export const db = getFirestore(firebaseApp);
 
 export const createUserDocument = async (user, additionalData) => {
   if (!user) return;

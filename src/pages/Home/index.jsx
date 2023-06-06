@@ -35,6 +35,7 @@ function Home() {
   const [records, setRecords] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [showLogoutAlert, setShowLogoutAlert] = useState(false);
   const [validationErrors, setValidationErrors] = useState({});
   const [isSubmitted, setIsSubmitted] = useState(false);
 
@@ -64,6 +65,10 @@ function Home() {
     1: "Ativo",
     2: "Inativo",
     3: "Pendente",
+  };
+
+  const handleLogout = () => {
+    setShowLogoutAlert(true);
   };
 
   const handleEditIconClick = (user) => {
@@ -251,6 +256,26 @@ function Home() {
   };
 
   useEffect(() => {
+    if (showLogoutAlert) {
+      Swal.fire({
+        title: "Deseja sair?",
+        text: "Você será redirecionado para a página de login.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Sair",
+        cancelButtonText: "Cancelar",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          setShowLogoutAlert(false);
+          window.location.href = "/";
+        } else {
+          setShowLogoutAlert(false);
+        }
+      });
+    }
+  }, [showLogoutAlert]);
+
+  useEffect(() => {
     const db = getFirestore(firebaseApp);
     const usersRef = collection(db, "users");
     const unsubscribe = onSnapshot(usersRef, (snapshot) => {
@@ -310,7 +335,7 @@ function Home() {
           </div>
         </div>
         <div className="row">
-          <div className="table-responsive">
+          <div className="table-responsive mb-4">
             <table className="table table-bordered">
               <thead>
                 <tr>
@@ -372,47 +397,57 @@ function Home() {
             </table>
           </div>
         </div>
-        <nav className="mt-5" aria-label="Page navigation">
-          <ul className="pagination pagination-sm justify-content-end">
-            <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
-              <a
-                className="page-link"
-                onClick={() => handlePaginationClick(currentPage - 1)}
+        <div className="d-flex justify-content-between">
+          <Button
+            className="btn-sm btn-danger align-self-center"
+            onClick={handleLogout}
+          >
+            Sair
+          </Button>
+          <nav className="mt-1 d-flex justify-content-center" aria-label="Page navigation">
+            <ul className="pagination pagination-sm d-flex justify-content-center" style={{ marginBottom: "0" }}>
+              <li
+                className={`page-item ${currentPage === 1 ? "disabled" : ""}`}
               >
-                Anterior
-              </a>
-            </li>
-            {Array.from({ length: totalPages }, (_, index) => index + 1).map(
-              (pageNumber) => (
-                <li
-                  className={`page-item ${
-                    pageNumber === currentPage ? "active" : ""
-                  }`}
-                  key={pageNumber}
+                <a
+                  className="page-link"
+                  onClick={() => handlePaginationClick(currentPage - 1)}
                 >
-                  <a
-                    className="page-link"
-                    onClick={() => handlePaginationClick(pageNumber)}
+                  Anterior
+                </a>
+              </li>
+              {Array.from({ length: totalPages }, (_, index) => index + 1).map(
+                (pageNumber) => (
+                  <li
+                    className={`page-item ${
+                      pageNumber === currentPage ? "active" : ""
+                    }`}
+                    key={pageNumber}
                   >
-                    {pageNumber}
-                  </a>
-                </li>
-              )
-            )}
-            <li
-              className={`page-item ${
-                currentPage === totalPages ? "disabled" : ""
-              }`}
-            >
-              <a
-                className="page-link"
-                onClick={() => handlePaginationClick(currentPage + 1)}
+                    <a
+                      className="page-link"
+                      onClick={() => handlePaginationClick(pageNumber)}
+                    >
+                      {pageNumber}
+                    </a>
+                  </li>
+                )
+              )}
+              <li
+                className={`page-item ${
+                  currentPage === totalPages ? "disabled" : ""
+                }`}
               >
-                Próxima
-              </a>
-            </li>
-          </ul>
-        </nav>
+                <a
+                  className="page-link"
+                  onClick={() => handlePaginationClick(currentPage + 1)}
+                >
+                  Próxima
+                </a>
+              </li>
+            </ul>
+          </nav>
+        </div>
       </div>
 
       {/* <!--- Model Box ---> */}
