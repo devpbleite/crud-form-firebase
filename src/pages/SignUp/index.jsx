@@ -3,8 +3,7 @@ import LogoImage from "../../assets/logo.png";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth, db, createUserDocument } from "../../services/firebaseConfig";
-import { doc, setDoc, getDoc } from "firebase/firestore";
+import { auth, createUserDocument } from "../../services/firebaseConfig";
 import Swal from "sweetalert2";
 
 function SignUp() {
@@ -29,23 +28,24 @@ function SignUp() {
 
         await createUserDocument(user, { name });
 
-        setErrorMessage("");
+        Swal.fire({
+          icon: "success",
+          title: "Sucesso!",
+          text: "Usuário cadastrado com sucesso!",
+        }).then(() => {
+          window.location.href = "/";
+        });
       } catch (error) {
         setErrorMessage(
           "Ocorreu um erro ao criar o usuário. Por favor, tente novamente."
         );
       }
-
-      setSuccessMessage("Usuário cadastrado com sucesso!");
-
-      Swal.fire({
-        icon: "success",
-        title: "Sucesso!",
-        text: "Usuário cadastrado com sucesso!",
-      });
     } else {
-      setErrorMessage("Por favor, preencha todos os campos.");
-      setSuccessMessage("");
+      Swal.fire({
+        icon: "error",
+        title: "Erro!",
+        text: "Por favor, preencha todos os campos.",
+      });
     }
   }
 
@@ -106,14 +106,18 @@ function SignUp() {
 
           <div className="d-grid pt-2">
             <button className="btn btn-danger" onClick={handleSignUp}>
-              <Link to="/" style={{ textDecoration: "none", color: "white" }}>
+              <Link
+                to="/"
+                style={{ textDecoration: "none", color: "white" }}
+                onClick={handleSignUp}
+              >
                 Cadastrar
               </Link>
             </button>
           </div>
           <p className="text-end pt-2">
             Possui uma conta?{" "}
-            <Link style={{ textDecoration: "none", color: "black" }} to="/">
+            <Link to="/" style={{ textDecoration: "none", color: "black" }}>
               <strong>Faça seu login</strong>
             </Link>
           </p>
