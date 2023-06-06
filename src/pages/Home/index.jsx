@@ -9,22 +9,13 @@ import {
   doc,
   onSnapshot,
 } from "firebase/firestore";
+import firebaseApp from "../../services/firebaseConfig";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Button, Modal } from "react-bootstrap";
 import ModalViewUser from "../../components/ModalViewUser";
 import InputMask from "react-input-mask";
 import LogoImage from "../../assets/logo.png";
-import { initializeApp } from "firebase/app";
 import Swal from "sweetalert2";
-
-const firebaseApp = initializeApp({
-  apiKey: "AIzaSyD9Zuzlc5R5tj1a7sIBSM0WD5F2ztTygYw",
-  authDomain: "auth-crud-2bf07.firebaseapp.com",
-  projectId: "auth-crud-2bf07",
-  storageBucket: "auth-crud-2bf07.appspot.com",
-  messagingSenderId: "339738484630",
-  appId: "1:339738484630:web:7d8a6c6d13ca0183acc7b7",
-});
 
 function Home() {
   const [show, setShow] = useState(false);
