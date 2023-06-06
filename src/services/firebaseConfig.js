@@ -1,8 +1,8 @@
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore, doc, setDoc } from "firebase/firestore";
-import 'firebase/firestore'
-import 'firebase/auth'
+import "firebase/firestore";
+import "firebase/auth";
 
 const firebaseConfig = {
   apiKey: "AIzaSyD9Zuzlc5R5tj1a7sIBSM0WD5F2ztTygYw",
@@ -10,7 +10,7 @@ const firebaseConfig = {
   projectId: "auth-crud-2bf07",
   storageBucket: "auth-crud-2bf07.appspot.com",
   messagingSenderId: "339738484630",
-  appId: "1:339738484630:web:7d8a6c6d13ca0183acc7b7"
+  appId: "1:339738484630:web:7d8a6c6d13ca0183acc7b7",
 };
 
 const app = initializeApp(firebaseConfig);
@@ -24,12 +24,11 @@ export const createUserDocument = async (user, additionalData) => {
   const snapshot = await userRef.get();
 
   if (!snapshot.exists()) {
-
     const { displayName, login, email, password, uid } = user;
     const { name } = additionalData;
 
     try {
-      await setDoc(userRef,{
+      await setDoc(userRef, {
         name,
         displayName,
         login,
@@ -44,11 +43,15 @@ export const createUserDocument = async (user, additionalData) => {
   }
 
   return getUserDocument(user.uid);
-}
+};
 
 export const registerUser = async (email, password, additionalData) => {
   try {
-    const { user } = await createUserWithEmailAndPassword(auth, email, password);
+    const { user } = await createUserWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
     await createUserDocument(user, additionalData);
     return user;
   } catch (error) {
@@ -56,4 +59,3 @@ export const registerUser = async (email, password, additionalData) => {
     throw error;
   }
 };
-

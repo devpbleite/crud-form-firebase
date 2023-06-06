@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom'
 function ForgotPass() {
   return (
     <div className="signin template d-flex justify-content-center align-items-center vh-100 bg-danger">
-      <div className="fcol-sm-8 col-md-6 col-lg-4 p-5 rounded bg-white">
+      <div className="col-sm-8 col-md-6 col-lg-4 p-5 rounded bg-white">
         <form>
           <div className="d-flex justify-content-center mb-4">
           <img src={LogoImage} alt="" width={55} />
@@ -31,7 +31,12 @@ function ForgotPass() {
           <div className="d-grid pt-2">
           <button className="btn btn-danger"><Link to='/' style={{ textDecoration: "none", color: 'white' }}>Registrar</Link></button>
           </div>
-          
+          <p className="text-end pt-2">
+            Possui uma conta?{" "}
+            <Link style={{ textDecoration: "none", color: "black" }} to="/">
+              <strong>Faça seu login</strong>
+            </Link>
+          </p>
         </form>
       </div>
     </div>
