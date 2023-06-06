@@ -9,7 +9,7 @@ import {
   doc,
   onSnapshot,
 } from "firebase/firestore";
-import firebaseApp from "../../services/firebaseConfig";
+import { firebaseApp } from "../../services/firebaseConfig";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Button, Modal } from "react-bootstrap";
 import ModalViewUser from "../../components/ModalViewUser";
