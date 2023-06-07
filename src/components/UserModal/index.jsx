@@ -181,9 +181,9 @@ const UserModal = ({
                     value={status}
                     onChange={(e) => setStatus(e.target.value)}
                   >
-                    <option value="Ativo">Ativo</option>
-                    <option value="Inativo">Inativo</option>
-                    <option value="Bloqueado">Bloqueado</option>
+                    <option value="1">Ativo</option>
+                    <option value="2">Inativo</option>
+                    <option value="3">Bloqueado</option>
                   </select>
                 </div>
               </div>

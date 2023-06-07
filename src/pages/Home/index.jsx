@@ -342,6 +342,7 @@ function Home() {
           setMotherName={setMotherName}
           status={status}
           setStatus={setStatus}
+          statusOptions={statusOptions}
         />
 
         <ModalViewUser
