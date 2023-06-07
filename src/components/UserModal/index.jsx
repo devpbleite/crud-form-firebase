@@ -83,8 +83,7 @@ const UserModal = ({
                   type="password"
                   className={`form-control ${
                     isSubmitted && validationErrors.password ? "is-invalid" : ""
-                  }`}
-                  id="exampleInputEmail1"
+                  }`}                  
                   aria-describedby="emailHelp"
                   placeholder="Senha"
                   value={password}
@@ -100,8 +99,7 @@ const UserModal = ({
                   type="email"
                   className={`form-control ${
                     isSubmitted && validationErrors.email ? "is-invalid" : ""
-                  }`}
-                  id="exampleInputPassword1"
+                  }`}                  
                   placeholder="E-mail"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -117,8 +115,7 @@ const UserModal = ({
                   mask={"(99) 99999-9999"}
                   className={`form-control ${
                     isSubmitted && validationErrors.phone ? "is-invalid" : ""
-                  }`}
-                  id="exampleInputPassword1"
+                  }`}                  
                   placeholder="Telefone"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
@@ -134,8 +131,7 @@ const UserModal = ({
                   mask={"999.999.999-99"}
                   className={`form-control ${
                     isSubmitted && validationErrors.cpf ? "is-invalid" : ""
-                  }`}
-                  id="exampleInputPassword1"
+                  }`}                  
                   placeholder="CPF"
                   value={cpf}
                   onChange={(e) => setCpf(e.target.value)}
@@ -165,8 +161,7 @@ const UserModal = ({
                   type="text"
                   className={`form-control ${
                     isSubmitted && validationErrors.motherName ? "is-invalid" : ""
-                  }`}
-                  id="exampleInputPassword1"
+                  }`}                  
                   placeholder="Nome da Mãe"
                   value={motherName}
                   onChange={(e) => setMotherName(e.target.value)}
