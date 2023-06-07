@@ -63,7 +63,7 @@ function Home() {
   const statusOptions = {
     1: "Ativo",
     2: "Inativo",
-    3: "Pendente",
+    3: "Bloqueado",
   };
 
   const handleLogout = () => {
