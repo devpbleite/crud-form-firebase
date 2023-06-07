@@ -1,6 +1,6 @@
 
 import RoutesApp from "./routes";
-import styles from '../src/styles/global.css'
+import styles from './styles/global.css'
 
 const App = () => {
   return <RoutesApp />;
