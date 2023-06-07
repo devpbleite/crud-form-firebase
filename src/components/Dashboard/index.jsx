@@ -6,7 +6,7 @@ const Dashboard = ({
   handleSearch,
   handleShow,
   currentRecords,
-  users,
+  user,
   startIndex,
   statusOptions,
   handleViewUser,
