@@ -67,7 +67,7 @@ const UserModal = ({
                 <input
                   type="text"
                   className={`form-control ${
-                    isSubmitted && validationErrors.name ? "is-invalid" : ""
+                    isSubmitted && validationErrors.login ? "is-invalid" : ""
                   }`}
                   placeholder="Login"
                   value={login}
@@ -82,7 +82,7 @@ const UserModal = ({
                 <input
                   type="password"
                   className={`form-control ${
-                    isSubmitted && validationErrors.name ? "is-invalid" : ""
+                    isSubmitted && validationErrors.password ? "is-invalid" : ""
                   }`}
                   id="exampleInputEmail1"
                   aria-describedby="emailHelp"
@@ -99,7 +99,7 @@ const UserModal = ({
                 <input
                   type="email"
                   className={`form-control ${
-                    isSubmitted && validationErrors.name ? "is-invalid" : ""
+                    isSubmitted && validationErrors.email ? "is-invalid" : ""
                   }`}
                   id="exampleInputPassword1"
                   placeholder="E-mail"
@@ -116,7 +116,7 @@ const UserModal = ({
                   type="text"
                   mask={"(99) 99999-9999"}
                   className={`form-control ${
-                    isSubmitted && validationErrors.name ? "is-invalid" : ""
+                    isSubmitted && validationErrors.phone ? "is-invalid" : ""
                   }`}
                   id="exampleInputPassword1"
                   placeholder="Telefone"
@@ -133,7 +133,7 @@ const UserModal = ({
                   type="text"
                   mask={"999.999.999-99"}
                   className={`form-control ${
-                    isSubmitted && validationErrors.name ? "is-invalid" : ""
+                    isSubmitted && validationErrors.cpf ? "is-invalid" : ""
                   }`}
                   id="exampleInputPassword1"
                   placeholder="CPF"
@@ -148,7 +148,7 @@ const UserModal = ({
                 Data de Nascimento
                 <InputMask
                   className={`form-control ${
-                    isSubmitted && validationErrors.name ? "is-invalid" : ""
+                    isSubmitted && validationErrors.birthdate ? "is-invalid" : ""
                   }`}
                   mask="99/99/9999"
                   placeholder="Data de Nascimento"
@@ -164,7 +164,7 @@ const UserModal = ({
                 <input
                   type="text"
                   className={`form-control ${
-                    isSubmitted && validationErrors.name ? "is-invalid" : ""
+                    isSubmitted && validationErrors.motherName ? "is-invalid" : ""
                   }`}
                   id="exampleInputPassword1"
                   placeholder="Nome da Mãe"
@@ -180,7 +180,7 @@ const UserModal = ({
                 <div className="input-group">
                   <select
                     className={`form-control ${
-                      isSubmitted && validationErrors.name ? "is-invalid" : ""
+                      isSubmitted && validationErrors.status ? "is-invalid" : ""
                     }`}
                     aria-label="Default select example"
                     value={status}
