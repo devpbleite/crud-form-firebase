@@ -62,10 +62,9 @@ function SignUp() {
         icon: "success",
         title: "Sucesso!",
         text: "Usuário cadastrado com sucesso! Volte para a página de login.",
-      });
-      setTimeout(() => {
+      }).then(() => {
         window.location.href = "/";
-      }, 2000);
+      });
     } else {
       Swal.fire({
         icon: "warning",
