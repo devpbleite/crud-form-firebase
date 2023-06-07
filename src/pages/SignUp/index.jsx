@@ -16,14 +16,7 @@ function SignUp() {
 
   useEffect(() => {
     setIsFormValid(name && email && password && confirmPassword);
-  }, [name, email, password, confirmPassword]);
-
-  function resetForm() {
-    setName("");
-    setEmail("");
-    setPassword("");
-    setConfirmPassword("");
-  }
+  }, [name, email, password, confirmPassword]);  
 
   async function handleSignUp(e) {
     e.preventDefault();
@@ -55,13 +48,12 @@ function SignUp() {
           "Ocorreu um erro ao criar o usuário. Por favor, tente novamente."
         );
       }
-      resetForm();
       setSuccessMessage("Usuário cadastrado com sucesso!");
 
       Swal.fire({
         icon: "success",
         title: "Sucesso!",
-        text: "Usuário cadastrado com sucesso! Volte para a página de login.",
+        text: "Usuário cadastrado com sucesso!",
       }).then(() => {
         window.location.href = "/";
       });
