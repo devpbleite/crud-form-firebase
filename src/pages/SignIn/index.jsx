@@ -40,7 +40,7 @@ function SignIn() {
 
   return (
     <div className="signin template d-flex justify-content-center align-items-center vh-100 bg-danger">
-      <div className="col-sm-8 col-md-6 col-lg-4 col-xxl-3 p-5 rounded bg-white">
+      <div className="col-sm-8 shadow-lg col-md-6 col-lg-4 col-xxl-3 p-5 rounded bg-white">
         <form>
           <div className="d-flex justify-content-center mb-4">
             <img src={LogoImage} alt="" width={55} />

@@ -326,7 +326,7 @@ function Home() {
   );
 
   return (
-    <div className="p-3 m-5">
+    <div className="p-3 m-5 h-100 d-flex justify-content-center align-items-center">
       <Dashboard
         LogoImage={LogoImage}
         searchTerm={searchTerm}
