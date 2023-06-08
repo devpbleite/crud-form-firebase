@@ -82,8 +82,39 @@ function Home() {
     3: "Bloqueado",
   };
 
+  const validateForm = () => {
+    const errors = {};
+
+    if (!name) {
+      errors.name = true;
+    }
+    if (!login) {
+      errors.login = true;
+    }
+    if (!password) {
+      errors.password = true;
+    }
+    if (!email) {
+      errors.email = true;
+    }
+    if (!phone) {
+      errors.phone = true;
+    }
+    if (!cpf) {
+      errors.cpf = true;
+    }
+    if (!birthdate) {
+      errors.birthdate = true;
+    }
+    if (!motherName) {
+      errors.motherName = true;
+    }
+
+    return errors;
+  };
+
   const handleAuthenticated = () => {
-    console.log('usuário logado')
+    console.log("usuário logado");
   };
 
   const handleUnauthenticated = () => {
@@ -145,32 +176,7 @@ function Home() {
   };
 
   const handleCreateUser = async () => {
-    const errors = {};
-
-    if (!name) {
-      errors.name = true;
-    }
-    if (!login) {
-      errors.login = true;
-    }
-    if (!password) {
-      errors.password = true;
-    }
-    if (!email) {
-      errors.email = true;
-    }
-    if (!phone) {
-      errors.phone = true;
-    }
-    if (!cpf) {
-      errors.cpf = true;
-    }
-    if (!birthdate) {
-      errors.birthdate = true;
-    }
-    if (!motherName) {
-      errors.motherName = true;
-    }
+    const errors = validateForm();
 
     if (Object.keys(errors).length > 0) {
       setValidationErrors(errors);
@@ -180,56 +186,40 @@ function Home() {
     setValidationErrors({});
     setEditUser(null);
 
-    const db = getFirestore(firebaseApp);
-    const user = await addDoc(collection(db, "users"), {
-      name,
-      login,
-      password,
-      email,
-      phone,
-      cpf,
-      birthdate,
-      motherName,
-      status,
-    });
+    try {
+      const db = getFirestore(firebaseApp);
+      await addDoc(collection(db, "users"), {
+        name,
+        login,
+        password,
+        email,
+        phone,
+        cpf,
+        birthdate,
+        motherName,
+        status,
+      });
 
-    resetForm();
-    handleClose();
+      resetForm();
+      handleClose();
 
-    Swal.fire({
-      icon: "success",
-      title: "Sucesso!",
-      text: "Usuário cadastrado com sucesso!",
-    });
+      Swal.fire({
+        icon: "success",
+        title: "Sucesso!",
+        text: "Usuário cadastrado com sucesso!",
+      });
+    } catch (error) {
+      console.error("Erro ao criar usuário:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Erro!",
+        text: "Ocorreu um erro ao criar o usuário. Por favor, tente novamente mais tarde.",
+      });
+    }
   };
 
   const handleUpdateUser = async () => {
-    const errors = {};
-
-    if (!name) {
-      errors.name = true;
-    }
-    if (!login) {
-      errors.login = true;
-    }
-    if (!password) {
-      errors.password = true;
-    }
-    if (!email) {
-      errors.email = true;
-    }
-    if (!phone) {
-      errors.phone = true;
-    }
-    if (!cpf) {
-      errors.cpf = true;
-    }
-    if (!birthdate) {
-      errors.birthdate = true;
-    }
-    if (!motherName) {
-      errors.motherName = true;
-    }
+    const errors = validateForm();
 
     if (Object.keys(errors).length > 0) {
       setValidationErrors(errors);
