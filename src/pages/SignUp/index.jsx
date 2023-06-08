@@ -1,8 +1,7 @@
 import LogoImage from "../../assets/logo.png";
 import { Link } from "react-router-dom";
-import { useState, useEffect } from "react";
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth, db, createUserDocument } from "../../services/firebaseConfig";
+import { useState } from "react";
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import Swal from "sweetalert2";
 
 function SignUp() {
@@ -10,63 +9,45 @@ function SignUp() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
-  const [isFormValid, setIsFormValid] = useState(false);
 
-  useEffect(() => {
-    setIsFormValid(name && email && password && confirmPassword);
-  }, [name, email, password, confirmPassword]);  
+  const auth = getAuth();
 
-  async function handleSignUp(e) {
+  const handleSignUp = (e) => {
     e.preventDefault();
 
-    if (isFormValid) {
-      if (password !== confirmPassword) {
-        setErrorMessage("");
+    if (password !== confirmPassword) {
+      Swal.fire({
+        icon: "error",
+        title: "Erro",
+        text: "As senhas não correspondem.",
+      });
+      return;
+    }
+
+    createUserWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        const user = userCredential.user;
+        Swal.fire({
+          icon: "success",
+          title: "Cadastro realizado",
+          text: "Seu cadastro foi realizado com sucesso!",
+          confirmButtonText: "OK",
+        }).then((result) => {
+          if (result.isConfirmed) {
+            window.location.href = "/";
+          }
+        });
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
         Swal.fire({
           icon: "error",
           title: "Erro",
-          text: "As senhas não coincidem. Por favor, corrija-as.",
+          text: "Ocorreu um erro ao realizar o cadastro.",
         });
-        return;
-      }
-
-      try {
-        const userCredential = await createUserWithEmailAndPassword(
-          auth,
-          email,
-          password,
-          confirmPassword
-        );
-
-        const user = userCredential.user;
-
-        await createUserDocument(user, { name });
-      } catch (error) {
-        setErrorMessage(
-          "Ocorreu um erro ao criar o usuário. Por favor, tente novamente."
-        );
-      }
-      setSuccessMessage("Usuário cadastrado com sucesso!");
-
-      Swal.fire({
-        icon: "success",
-        title: "Sucesso!",
-        text: "Usuário cadastrado com sucesso!",
-      }).then(() => {
-        window.location.href = "/";
       });
-    } else {
-      Swal.fire({
-        icon: "warning",
-        title: "Oops...",
-        text: "Por favor, preencha todos os campos.",
-      });
-      setErrorMessage("");
-      setSuccessMessage("");
-    }
-  }
+  };
 
   return (
     <div className="signin template d-flex justify-content-center align-items-center vh-100 bg-danger">

@@ -2,58 +2,41 @@ import { useState, useEffect } from "react";
 import React from "react";
 import LogoImage from "../../assets/logo.png";
 import { Link } from "react-router-dom";
-import { useSignInWithEmailAndPassword } from "react-firebase-hooks/auth";
-import { auth } from "../../services/firebaseConfig";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import Swal from "sweetalert2";
 
 function SignIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [isFormValid, setIsFormValid] = useState(false);
 
-  const [signInWithEmailAndPassword, user, loading, error] =
-    useSignInWithEmailAndPassword(auth);
+  const auth = getAuth();
 
-  useEffect(() => {
-    setIsFormValid(email && password);
-  }, [email, password]);
+  const handleEmailChange = (e) => {
+    setEmail(e.target.value);
+  };
 
-  async function handleSignIn(e) {
+  const handlePasswordChange = (e) => {
+    setPassword(e.target.value);
+  };
+
+  const handleSignIn = (e) => {
     e.preventDefault();
-    if (isFormValid) {
-      try {
-        await signInWithEmailAndPassword(email, password);
 
+    signInWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        const user = userCredential.user;
         window.location.href = "/home";
-      } catch (error) {
-        
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
         Swal.fire({
           icon: "error",
-          title: "Erro de autenticação",
-          text: "Usuário não cadastrado. Por favor, verifique suas credenciais.",
+          title: "Erro",
+          text: "Usuário ou senha inválidos.",
         });
-      }
-    } else {
-      
-      Swal.fire({
-        icon: "error",
-        title: "Erro de autenticação",
-        text: "Por favor, preencha todos os campos.",
       });
-    }
-  }
-
-  function handleEmailChange(e) {
-    setEmail(e.target.value);
-  }
-
-  function handlePasswordChange(e) {
-    setPassword(e.target.value);
-  }
-
-  if (loading) {
-    return <p>Carregando...</p>;
-  }
+  };
 
   return (
     <div className="signin template d-flex justify-content-center align-items-center vh-100 bg-danger">
@@ -95,7 +78,7 @@ function SignIn() {
           <div className="d-grid">
             <button
               className="btn btn-danger"
-              disabled={!isFormValid}
+              disabled={!email || !password}
               onClick={handleSignIn}
             >
               <Link

@@ -9,12 +9,28 @@ import {
   onSnapshot,
 } from "firebase/firestore";
 import { firebaseApp } from "../../services/firebaseConfig";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 import "bootstrap/dist/css/bootstrap.min.css";
 import UserModal from "../../components/UserModal";
 import ModalViewUser from "../../components/ModalViewUser";
 import Dashboard from "../../components/Dashboard";
 import LogoImage from "../../assets/logo.png";
 import Swal from "sweetalert2";
+
+const checkAuthentication = (onAuthenticated, onUnauthenticated) => {
+  useEffect(() => {
+    const auth = getAuth();
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        onAuthenticated();
+      } else {
+        onUnauthenticated();
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+};
 
 function Home() {
   const [show, setShow] = useState(false);
@@ -65,6 +81,22 @@ function Home() {
     2: "Inativo",
     3: "Bloqueado",
   };
+
+  const handleAuthenticated = () => {
+    console.log('usuário logado')
+  };
+
+  const handleUnauthenticated = () => {
+    Swal.fire({
+      icon: "error",
+      title: "Usuário não cadastrado",
+      text: "Você não tem permissão para acessar esta página",
+    }).then(() => {
+      window.location.href = "/";
+    });
+  };
+
+  checkAuthentication(handleAuthenticated, handleUnauthenticated);
 
   const handleLogout = () => {
     setShowLogoutAlert(true);
