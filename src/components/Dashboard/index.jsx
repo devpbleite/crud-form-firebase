@@ -126,53 +126,57 @@ const Dashboard = ({
       >
         Sair
       </Button>
-      <nav
-        className="mt-1 d-flex justify-content-center"
-        aria-label="Page navigation"
-      >
-        <ul
-          className="pagination pagination-sm d-flex justify-content-center"
-          style={{ marginBottom: "0" }}
-        >
-          <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
-            <a
-              className="page-link"
-              onClick={() => handlePaginationClick(currentPage - 1)}
+      <button className="border-0 bg-transparent">
+          <nav
+            className="mt-1 d-flex justify-content-center cursor-pointer"
+            aria-label="Page navigation"
+          >
+            <ul
+              className="pagination pagination-sm d-flex justify-content-center"
+              style={{ marginBottom: "0" }}
             >
-              Anterior
-            </a>
-          </li>
-          {Array.from({ length: totalPages }, (_, index) => index + 1).map(
-            (pageNumber) => (
               <li
-                className={`page-item ${
-                  pageNumber === currentPage ? "active" : ""
-                }`}
-                key={pageNumber}
+                className={`page-item ${currentPage === 1 ? "disabled" : ""}`}
               >
                 <a
                   className="page-link"
-                  onClick={() => handlePaginationClick(pageNumber)}
+                  onClick={() => handlePaginationClick(currentPage - 1)}
                 >
-                  {pageNumber}
+                  Anterior
                 </a>
               </li>
-            )
-          )}
-          <li
-            className={`page-item ${
-              currentPage === totalPages ? "disabled" : ""
-            }`}
-          >
-            <a
-              className="page-link"
-              onClick={() => handlePaginationClick(currentPage + 1)}
-            >
-              Próxima
-            </a>
-          </li>
-        </ul>
-      </nav>
+              {Array.from({ length: totalPages }, (_, index) => index + 1).map(
+                (pageNumber) => (
+                  <li
+                    className={`page-item ${
+                      pageNumber === currentPage ? "active" : ""
+                    }`}
+                    key={pageNumber}
+                  >
+                    <a
+                      className="page-link"
+                      onClick={() => handlePaginationClick(pageNumber)}
+                    >
+                      {pageNumber}
+                    </a>
+                  </li>
+                )
+              )}
+              <li
+                className={`page-item ${
+                  currentPage === totalPages ? "disabled" : ""
+                }`}
+              >
+                <a
+                  className="page-link"
+                  onClick={() => handlePaginationClick(currentPage + 1)}
+                >
+                  Próxima
+                </a>
+              </li>
+            </ul>
+          </nav>
+        </button>
     </div>
   </div>
   )
