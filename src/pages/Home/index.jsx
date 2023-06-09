@@ -71,9 +71,19 @@ export const Home = () => {
 
   const handleLogout = async () => {
     try {
-      await logout();
-      window.location.href = "/";
-      console.log("Usuário deslogado");
+      const confirmed = await Swal.fire({
+        title: 'Deseja se desconectar?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Sim',
+        cancelButtonText: 'Não',
+      });
+  
+      if (confirmed.isConfirmed) {
+        await logout();
+        window.location.href = "/";
+        console.log("Usuário deslogado");
+      }
     } catch (error) {
       console.log(error);
     }
