@@ -32,7 +32,7 @@ const Dashboard = ({
           <img src={LogoImage} alt="Logo" width={40} />
         </div>
         <div className="col-12 col-sm-6 col-lg-5 text-center">
-          <h3 className="mb-4">Painel de Controle - Usuários</h3>
+          <h3 className="mb-4">Painel de Controle - Usuários <p>{user && email}</p></h3>
         </div>
 
         <div className="col-12 col-md-4 mt-3">

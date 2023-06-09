@@ -1,7 +1,7 @@
 import LogoImage from "../../assets/logo.png";
 import { Link } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 import { useState } from "react";
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import Swal from "sweetalert2";
 
 function SignUp() {
@@ -9,44 +9,47 @@ function SignUp() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState("");
 
-  const auth = getAuth();
+  const { createUser } = useAuth();
 
-  const handleSignUp = (e) => {
+  const handleSignUp = async (e) => {
     e.preventDefault();
-
-    if (password !== confirmPassword) {
-      Swal.fire({
-        icon: "error",
-        title: "Erro",
-        text: "As senhas não correspondem.",
-      });
-      return;
-    }
-
-    createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        const user = userCredential.user;
+    setError("");
+    try {
+      if (!email || !password || !confirmPassword) {
+        throw new Error("Todos os campos precisam ser preenchidos.");
+      }
+      if (password !== confirmPassword) {
         Swal.fire({
-          icon: "success",
-          title: "Cadastro realizado",
-          text: "Seu cadastro foi realizado com sucesso!",
-          confirmButtonText: "OK",
-        }).then((result) => {
-          if (result.isConfirmed) {
-            window.location.href = "/";
-          }
-        });
-      })
-      .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        Swal.fire({
+          title: "Erro!",
+          text: "A senha e a confirmação de senha precisam ser iguais.",
           icon: "error",
-          title: "Erro",
-          text: "Ocorreu um erro ao realizar o cadastro.",
+          confirmButtonText: "OK",
         });
+        throw new Error("A senha e a confirmação de senha não são iguais.");
+      }
+      await createUser(email, password);
+      Swal.fire({
+        title: "Sucesso!",
+        text: "Usuário cadastrado com sucesso.",
+        icon: "success",
+        confirmButtonText: "Ok",
+      }).then(() => {
+        window.location.href = "/";
       });
+    } catch (error) {
+      setError(error.message);
+      console.log(error);
+      if (error.message === "Todos os campos precisam ser preenchidos.") {
+        Swal.fire({
+          title: "Erro!",
+          text: "Todos os campos precisam ser preenchidos.",
+          icon: "error",
+          confirmButtonText: "OK",
+        });
+      }
+    }
   };
 
   return (

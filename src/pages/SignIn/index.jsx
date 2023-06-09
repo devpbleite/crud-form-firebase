@@ -1,41 +1,33 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import React from "react";
 import LogoImage from "../../assets/logo.png";
 import { Link } from "react-router-dom";
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { useAuth } from "../../context/AuthContext";
 import Swal from "sweetalert2";
 
 function SignIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
-  const auth = getAuth();
+  const { signIn } = useAuth();
 
-  const handleEmailChange = (e) => {
-    setEmail(e.target.value);
-  };
-
-  const handlePasswordChange = (e) => {
-    setPassword(e.target.value);
-  };
-
-  const handleSignIn = (e) => {
+  const handleSignIn = async (e) => {
     e.preventDefault();
-
-    signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        const user = userCredential.user;
-        window.location.href = "/home";
-      })
-      .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        Swal.fire({
-          icon: "error",
-          title: "Erro",
-          text: "Usuário ou senha inválidos.",
-        });
+    setError("");
+    try {
+      await signIn(email, password);
+      window.location.href = "/home";
+    } catch (error) {
+      setError(error.message);
+      console.log(error.message);
+      Swal.fire({
+        title: "Erro!",
+        text: "Usuário ou senha inválidos.",
+        icon: "error",
+        confirmButtonText: "OK",
       });
+    }
   };
 
   return (
@@ -53,7 +45,7 @@ function SignIn() {
               type="email"
               className="form-control"
               placeholder="Digite seu email..."
-              onChange={handleEmailChange}
+              onChange={(e) => setEmail(e.target.value)}
             />
           </div>
           <div className="mb-2">
@@ -62,7 +54,7 @@ function SignIn() {
               type="password"
               className="form-control"
               placeholder="************"
-              onChange={handlePasswordChange}
+              onChange={(e) => setPassword(e.target.value)}
             />
           </div>
           <div className="mb-2">
@@ -81,12 +73,7 @@ function SignIn() {
               disabled={!email || !password}
               onClick={handleSignIn}
             >
-              <Link
-                to="/home"
-                style={{ textDecoration: "none", color: "white" }}
-              >
-                Login
-              </Link>
+              Login
             </button>
           </div>
           <p className="text-end pt-2">
