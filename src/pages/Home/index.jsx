@@ -34,8 +34,7 @@ export const Home = () => {
   const [editUser, setEditUser] = useState(null);
   const [records, setRecords] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
-  const [showLogoutAlert, setShowLogoutAlert] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);  
   const [validationErrors, setValidationErrors] = useState({});
   const [isSubmitted, setIsSubmitted] = useState(false);
 
