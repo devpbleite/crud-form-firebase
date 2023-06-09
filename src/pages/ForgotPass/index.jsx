@@ -1,34 +1,66 @@
-import { getAuth, sendPasswordResetEmail } from "firebase/auth";
 import { useState } from "react";
 import LogoImage from "../../assets/logo.png";
 import { Link } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
+import { fetchSignInMethodsForEmail } from "firebase/auth";
+import { auth } from "../../services/firebaseConfig";
 import Swal from "sweetalert2";
 
 export const ForgotPass = () => {
   const [email, setEmail] = useState("");
+  const [confirmEmail, setConfirmEmail] = useState("");
+  const [error, setError] = useState("");
 
-  const auth = getAuth();
+  const { resetPassword } = useAuth();
 
-  const handleResetPassword = (e) => {
+  const handleResetPassword = async (e) => {
     e.preventDefault();
-
-    sendPasswordResetEmail(auth, email)
-      .then(() => {
+    setError("");
+    try {
+      if (!email || !confirmEmail) {
+        throw new Error("Todos os campos precisam ser preenchidos.");
+      }
+      if (email !== confirmEmail) {
         Swal.fire({
-          icon: "success",
-          title: "E-mail enviado",
-          text: "Um e-mail foi enviado para redefinir sua senha.",
-        });
-      })
-      .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        Swal.fire({
+          title: "Erro!",
+          text: "O e-mail e a confirmação de e-mail precisam ser iguais.",
           icon: "error",
-          title: "Erro",
-          text: "Ocorreu um erro ao enviar o e-mail de redefinição de senha.",
+          confirmButtonText: "OK",
         });
+        throw new Error("A senha e a confirmação de senha não são iguais.");
+      }
+
+      const methods = await fetchSignInMethodsForEmail(auth, email);
+      if (methods.length === 0) {
+        Swal.fire({
+          title: "Erro!",
+          text: "Usuário não encontrado.",
+          icon: "error",
+          confirmButtonText: "OK",
+        });
+        throw new Error("Usuário não encontrado.");
+      }
+      await resetPassword(email);
+      Swal.fire({
+        title: "Sucesso!",
+        text: "E-mail de recuperação enviado.",
+        icon: "success",
+        confirmButtonText: "Ok",
+      }).then(() => {
+        window.location.href = "/";
       });
+    } catch (error) {
+      setError(error.message);
+      console.log(error);
+      if (error.message === "Todos os campos precisam ser preenchidos.") {
+        Swal.fire({
+          title: "Erro!",
+          text: "Todos os campos precisam ser preenchidos.",
+          icon: "error",
+          confirmButtonText: "OK",
+        });
+      }
+    }
   };
 
   return (
@@ -55,14 +87,14 @@ export const ForgotPass = () => {
               type="email"
               className="form-control"
               placeholder="Confirme seu email..."
+              value={confirmEmail}
+              onChange={(e) => setConfirmEmail(e.target.value)}
             />
           </div>
 
           <div className="d-grid pt-2">
             <button className="btn btn-danger" onClick={handleResetPassword}>
-              <Link to="/" style={{ textDecoration: "none", color: "white" }}>
-                Enviar
-              </Link>
+              Enviar
             </button>
           </div>
           <p className="text-end pt-2">
@@ -75,6 +107,6 @@ export const ForgotPass = () => {
       </div>
     </div>
   );
-}
+};
 
 export default ForgotPass;
