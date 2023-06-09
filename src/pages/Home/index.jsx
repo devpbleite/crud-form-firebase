@@ -17,7 +17,7 @@ import Dashboard from "../../components/Dashboard";
 import LogoImage from "../../assets/logo.png";
 import Swal from "sweetalert2";
 
-function Home() {
+export const Home = () => {
   const [show, setShow] = useState(false);
   const [name, setName] = useState("");
   const [login, setLogin] = useState("");
@@ -254,26 +254,6 @@ function Home() {
   };
 
   useEffect(() => {
-    if (showLogoutAlert) {
-      Swal.fire({
-        title: "Deseja sair?",
-        text: "Você será redirecionado para a página de login.",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonText: "Sair",
-        cancelButtonText: "Cancelar",
-      }).then((result) => {
-        if (result.isConfirmed) {
-          setShowLogoutAlert(false);
-          window.location.href = "/";
-        } else {
-          setShowLogoutAlert(false);
-        }
-      });
-    }
-  }, [showLogoutAlert]);
-
-  useEffect(() => {
     const db = getFirestore(firebaseApp);
     const usersRef = collection(db, "users");
     const unsubscribe = onSnapshot(usersRef, (snapshot) => {
@@ -287,10 +267,6 @@ function Home() {
 
     return () => unsubscribe();
   }, []);
-
-  const filteredUsers = users.filter((user) =>
-    user.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
 
   return (
     <div className="p-3 h-100 d-flex justify-content-center align-items-center">
@@ -352,6 +328,6 @@ function Home() {
       </div>
     </div>
   );
-}
+};
 
 export default Home;

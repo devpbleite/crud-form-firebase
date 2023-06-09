@@ -4,7 +4,7 @@ import { useAuth } from "../../context/AuthContext";
 import { useState } from "react";
 import Swal from "sweetalert2";
 
-function SignUp() {
+export const SignUp = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

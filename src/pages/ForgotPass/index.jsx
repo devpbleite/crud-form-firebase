@@ -4,7 +4,7 @@ import LogoImage from "../../assets/logo.png";
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
 
-function ForgotPass() {
+export const ForgotPass = () => {
   const [email, setEmail] = useState("");
 
   const auth = getAuth();
