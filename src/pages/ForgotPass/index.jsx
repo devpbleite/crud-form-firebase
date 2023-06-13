@@ -1,5 +1,6 @@
 import { useState } from "react";
-import LogoImage from "../../assets/logo.png";
+import LogoImage from "../../assets/logo3.jpg";
+import CompanyImage from "../../assets/companyImage.jpg";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { fetchSignInMethodsForEmail } from "firebase/auth";
@@ -65,45 +66,50 @@ export const ForgotPass = () => {
 
   return (
     <div className="signin template d-flex justify-content-center align-items-center vh-100 bg-danger">
-      <div className="col-sm-8 shadow-lg col-md-6 col-lg-4 col-xxl-3 p-5 rounded bg-white">
-        <form>
-          <div className="d-flex justify-content-center mb-4">
-            <img src={LogoImage} alt="" width={55} />
-          </div>
-          <h3 className="pb-3">Recupere sua senha</h3>
-          <div className="mb-2">
-            <label htmlFor="email">E-mail</label>
-            <input
-              type="email"
-              className="form-control"
-              placeholder="Digite seu email..."
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </div>
-          <div className="mb-2">
-            <label htmlFor="email">Confirme seu e-mail</label>
-            <input
-              type="email"
-              className="form-control"
-              placeholder="Confirme seu email..."
-              value={confirmEmail}
-              onChange={(e) => setConfirmEmail(e.target.value)}
-            />
-          </div>
+      <div className="col-sm-8 shadow-lg col-md-6 col-lg-10 col-xxl-7 p-5 rounded bg-white d-flex">
+        <div className="login-image col-md-6 pe-3">
+          <img src={CompanyImage} alt="FC" className="img-fluid h-100" />
+        </div>
+        <div className="login-card col-md-6 d-flex flex-column justify-content-center ps-5">
+          <form>
+            <div className="d-flex justify-content-center mb-4">
+              <img src={LogoImage} alt="" width={300} />
+            </div>
+            <h3 className="pb-3">Recupere sua senha</h3>
+            <div className="mb-4">
+              <label htmlFor="email">E-mail</label>
+              <input
+                type="email"
+                className="form-control"
+                placeholder="Digite seu email..."
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
+            <div className="mb-4">
+              <label htmlFor="email">Confirme seu e-mail</label>
+              <input
+                type="email"
+                className="form-control"
+                placeholder="Confirme seu email..."
+                value={confirmEmail}
+                onChange={(e) => setConfirmEmail(e.target.value)}
+              />
+            </div>
 
-          <div className="d-grid pt-2">
-            <button className="btn btn-danger" onClick={handleResetPassword}>
-              Enviar
-            </button>
-          </div>
-          <p className="text-end pt-2">
-            Possui uma conta?{" "}
-            <Link style={{ textDecoration: "none", color: "black" }} to="/">
-              <strong>Faça seu login</strong>
-            </Link>
-          </p>
-        </form>
+            <div className="d-grid gap-2">
+              <button className="btn btn-danger" onClick={handleResetPassword}>
+                Enviar
+              </button>
+            </div>
+            <p className="text-end pt-3" style={{ "marginBottom": 0 }}>
+              Possui uma conta?{" "}
+              <Link style={{ textDecoration: "none", color: "black" }} to="/">
+                <strong>Faça seu login</strong>
+              </Link>
+            </p>
+          </form>
+        </div>
       </div>
     </div>
   );
