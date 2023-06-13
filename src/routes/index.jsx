@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import Home from "../pages/Home";
 import SignIn from "../pages/SignIn";
 import SignUp from "../pages/SignUp";
@@ -8,9 +8,8 @@ import ProtectedRoute from "../components/ProtectRoute";
 
 const RoutesApp = () => {
   return (
-    <AuthContextProvider>
-      <BrowserRouter>
-        <Routes>
+    <AuthContextProvider>      
+      <Routes>
           <Route path="/" element={<SignIn />}></Route>
           <Route path="/signup" element={<SignUp />}></Route>
           <Route path="/forgotpass" element={<ForgotPass />}></Route>
@@ -22,8 +21,7 @@ const RoutesApp = () => {
               </ProtectedRoute>
             }
           />
-        </Routes>
-      </BrowserRouter>
+      </Routes>      
     </AuthContextProvider>
   );
 };
