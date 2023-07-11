@@ -1,4 +1,4 @@
-/* Estilos para telas menores que 768px */
+
 @media (max-width: 767px) {
   .crud {
     max-width: 100%;
@@ -7,7 +7,7 @@
   }
 }
 
-/* Estilos para telas entre 768px e 1023px */
+
 @media (min-width: 768px) and (max-width: 1023px) {
   .crud {
     max-width: 100%;
@@ -16,7 +16,7 @@
   }
 }
 
-/* Estilos para telas maiores ou iguais a 1024px */
+
 @media (min-width: 1024px) {
   .crud {
     max-width: 1100px;
