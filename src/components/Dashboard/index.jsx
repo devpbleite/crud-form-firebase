@@ -51,7 +51,7 @@ const Dashboard = ({
       </div>
       <div className="row">
         <div className="col-12">
-          <div className="table-responsive mb-4">
+          <div className="table-responsive">
             <table className="table table-bordered">
               <thead>
                 <tr>
